@@ -1,0 +1,18 @@
+\documentclass{standalone}
+\usepackage[braket]{qcircuit}
+\usepackage{amsmath}
+
+\begin{document}
+\begin{displaymath}
+\Qcircuit @C=1.2em @R=1.2em {
+  % Row 1: a^n
+  \lstick{\ket{a}^{\,n}} & \qw & \qw & \qw & \qw & \qw & \qw & \multigate{1}{\mathrm{SWAP}} & \qw & \rstick{\ket{a\,\oplus'\, b}} \qw \\
+  % Row 2: b^n
+  \lstick{\ket{b}^{\,n}} & \gate{QFT} & \gate{\varphi_{n+1}(-a)} & \gate{IQFT} & \gate{QFT} & \gate{\varphi_n(a)} & \gate{IQFT} & \ghost{\mathrm{SWAP}} & \qw & \rstick{\ket{a\,\oplus\, b}} \qw \\
+  % Row 3: anc_ab
+  \lstick{\ket{0}/\ket{1}} & \qw & \qw & \qw & \qw & \qw & \qw & \ctrl{-1} & \qw & \rstick{\ket{0}\,\backslash\,\ket{1}} \qw \\
+}
+\end{displaymath}
+\end{document}
+
+

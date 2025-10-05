@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[braket]{qcircuit}
+\usepackage{amsmath}
+
+\begin{document}
+
+\begin{displaymath}
+\Qcircuit @C=0.9em @R=1.2em {
+  % 1: a^n   (ab comparator)
+  \lstick{\ket{a}^{\,n}} & \multigate{2}{U_{\mathrm{comp}}} & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qw \\
+  % 2: b^n -> max(a,b)
+  \lstick{\ket{b}^{\,n}} & \ghost{U_{\mathrm{comp}}} & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qswap & \qw \\
+  % 3: anc_ab
+  \lstick{\ket{0}/\ket{1}} & \ghost{U_{\mathrm{comp}}} & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qwx & \qw \\
+  % 4: c^n
+  \lstick{\ket{c}^{\,n}} & \multigate{3}{\makebox[2.8em]{\centering $U_{\mathrm{comp}}$}} & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qwx & \qw \\
+  % 5: d^n -> max(c,d)
+  \lstick{\ket{d}^{\,n}} & \ghost{U_{\mathrm{comp}}} & \qw & \multigate{1}{\text{\scriptsize QFT}} & \multigate{1}{\text{\scriptsize $\varphi(-b)$}} & \multigate{1}{\text{\scriptsize IQFT}} & \gate{\text{\scriptsize QFT}} & \gate{\text{\scriptsize $\varphi(b)$}} & \multigate{1}{\text{\scriptsize IQFT}} & \qswap & \rstick{\ket{\max(a,b,c,d)}} \qw \\
+  % 6: anc_swap (sign bit for d-b)
+  \lstick{\ket{0}} & \push{} & \push{} & \ghost{\text{\scriptsize QFT}} & \ghost{\text{\scriptsize $\varphi(-b)$}} & \ghost{\text{\scriptsize IQFT}} & \qw & \qw & \ghost{\text{\scriptsize IQFT}} & \ctrl{-4} & \qw \\
+  % 7: anc_cd
+  \lstick{\ket{0}/\ket{1}} & \ghost{U_{\mathrm{comp}}} & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \qw
+}
+\end{displaymath}
+
+\end{document}

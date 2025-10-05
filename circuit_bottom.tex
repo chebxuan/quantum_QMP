@@ -1,0 +1,15 @@
+\documentclass{standalone}
+\usepackage[braket]{qcircuit}
+\usepackage{amsmath}
+
+\begin{document}
+\begin{displaymath}
+\Qcircuit @C=1.2em @R=1.2em {
+  \lstick{\ket{a}} & \multigate{2}{U_{\mathrm{comp}}} & \qw & \rstick{\ket{a\,\oplus'\, b}} \qw \\
+  \lstick{\ket{b}} & \ghost{U_{\mathrm{comp}}} & \qw & \rstick{\ket{a\,\oplus\, b}} \qw \\
+  \lstick{\ket{c}} & \ghost{U_{\mathrm{comp}}} & \qw & \rstick{\ket{0}\,\backslash\,\ket{1}} \qw 
+}
+\end{displaymath}
+\end{document}
+
+
