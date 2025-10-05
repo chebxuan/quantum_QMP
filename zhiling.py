@@ -27,10 +27,15 @@ def create_zeroing_network(n_pos_bits: int, n_gray_bits: int):
     circuit.x(control_y)
     circuit.x(control_x)
 
-    # 对每一个颜色比特应用一个CCX (Toffoli)门
+    # 对每一个颜色比特应用一个三控门 (MCX)
+    from qiskit.circuit.library import MCXGate
+
     for i in range(n_gray_bits):
-        # 如果颜色比特是|1⟩，就翻转它。这可以用一个简单的CCX实现
-        circuit.ccx(control_y, control_x, color_reg[i])
+        # 创建一个三控门，控制位是 [y_top, x_top, color_bit_i]
+        # 我们需要一个 "001-controlled" 门
+        # Qiskit的MCXGate可以方便地设置控制状态
+        mcx = MCXGate(num_ctrl_qubits=3, ctrl_state="001")
+        circuit.append(mcx, [control_y, control_x, color_reg[i], color_reg[i]])
 
     # 恢复控制位
     circuit.x(control_y)
