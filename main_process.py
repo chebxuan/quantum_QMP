@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit_aer import Aer, AerSimulator
+from PIL import Image
+from skimage.metrics import peak_signal_noise_ratio as psnr
+from skimage.metrics import structural_similarity as ssim
 
 # 假设 U_QMP 和 zhiling 脚本中的函数是可导入的
 from U_QMP import create_uqmp_circuit
@@ -74,14 +77,12 @@ def run_max_plus_transform(image_data):
     return output_image
 
 if __name__ == '__main__':
-    # 1. 创建一个 16x16 的样本图像 (图a)
-    # 使用一个简单的灰度梯度图案
-    print("1. 创建样本图像...")
-    img_size = 16
-    original_image = np.zeros((img_size, img_size), dtype=np.uint8)
-    for i in range(img_size):
-        for j in range(img_size):
-            original_image[i, j] = (i + j) * (255 // (2 * img_size - 2))
+    # 1. 加载、转换并调整 baboon.bmp 图像大小
+    print("1. 加载和预处理 baboon.bmp 图像...")
+    img_size = 32
+    with Image.open('baboon.bmp') as img:
+        original_image = img.convert('L').resize((img_size, img_size))
+        original_image = np.array(original_image, dtype=np.uint8)
 
     # 2. 执行Max-Plus变换
     print("2. 模拟Max-Plus变换...")
@@ -112,15 +113,12 @@ if __name__ == '__main__':
     axes[1].set_title('图b: 模拟Max-Plus变换并置零LL子带后')
     axes[1].grid(True, which='both', color='r', linestyle='-')
 
-    # 分析LL子带
-    ll_sub_band = final_image[1:img_size:2, 0:img_size:2]
-    all_zeros = np.all(ll_sub_band == 0)
-    
-    print("\n--- 分析 ---")
-    print(f"LL子带是否全部为零: {all_zeros}")
-    if all_zeros:
-        print("分析结果: 成功! LL子带已被完全置零。")
-    else:
-        print("分析结果: 失败! LL子带未被置零。")
+    # 5. 计算并打印PSNR和SSIM
+    psnr_value = psnr(original_image, final_image, data_range=255)
+    ssim_value = ssim(original_image, final_image, data_range=255)
+
+    print("\n--- 图像质量评估 ---")
+    print(f"PSNR (峰值信噪比): {psnr_value:.2f} dB")
+    print(f"SSIM (结构相似性): {ssim_value:.4f}")
 
     plt.show()
